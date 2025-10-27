@@ -36,7 +36,16 @@ public class QuestionController {
     public QuestionResponseDTO createQuestion(@Valid @RequestBody QuestionRequestDTO questionRequest) {
         return questionService.createQuestion(questionRequest);
     }
-
+    @PostMapping("/admin/create")
+    public ResponseEntity<QuestionResponseDTO> createQuestionWithAnswer(
+            @Valid @RequestBody QuestionRequestDTO questionRequest) {
+        try {
+            QuestionResponseDTO createdQuestion = questionService.createQuestionWithAnswer(questionRequest);
+            return ResponseEntity.ok(createdQuestion);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     @PutMapping("/{id}")
     public ResponseEntity<QuestionResponseDTO> updateQuestion(@PathVariable Long id,
                                                               @Valid @RequestBody QuestionRequestDTO questionRequest) {

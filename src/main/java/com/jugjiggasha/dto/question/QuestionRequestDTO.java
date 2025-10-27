@@ -18,10 +18,10 @@ public class QuestionRequestDTO {
     private String description;
 
     private Long categoryId;
-
+    private String answer;
     @Email(message = "Invalid email format")
     private String userEmail;
-
+    private String userName;
     private String userPhone;
 
 

@@ -37,6 +37,12 @@ public class QuestionService {
 
     public QuestionResponseDTO createQuestion(QuestionRequestDTO questionRequest) {
         Question question = convertToEntity(questionRequest);
+
+        // If answer is provided in request, set it
+        if (questionRequest.getAnswer() != null && !questionRequest.getAnswer().trim().isEmpty()) {
+            question.setAnswer(questionRequest.getAnswer());
+        }
+
         Question savedQuestion = questionRepository.save(question);
         return convertToDTO(savedQuestion);
     }
@@ -108,7 +114,35 @@ public class QuestionService {
         }
         return null;
     }
+    // Add this method for admin to create question with answer
+    public QuestionResponseDTO createQuestionWithAnswer(QuestionRequestDTO questionRequest) {
+        Question question = convertToEntity(questionRequest);
 
+        // Set answer if provided
+        if (questionRequest.getAnswer() != null && !questionRequest.getAnswer().trim().isEmpty()) {
+            question.createWithAnswer(questionRequest.getAnswer());
+        }
+
+        Question savedQuestion = questionRepository.save(question);
+        return convertToDTO(savedQuestion);
+    }
+    // Update the convertToEntity method
+    private Question convertToEntity(QuestionRequestDTO dto) {
+        Question question = new Question();
+        question.setTitle(dto.getTitle());
+        question.setDescription(dto.getDescription());
+        question.setUserEmail(dto.getUserEmail());
+        question.setUserPhone(dto.getUserPhone());
+        question.setUserName(dto.getUserName());
+
+        // Set category if categoryId is provided
+        if (dto.getCategoryId() != null) {
+            Optional<Category> category = categoryRepository.findById(dto.getCategoryId());
+            category.ifPresent(question::setCategory);
+        }
+
+        return question;
+    }
     // Convert Entity to DTO
     private QuestionResponseDTO convertToDTO(Question question) {
         QuestionResponseDTO dto = new QuestionResponseDTO();
@@ -134,20 +168,5 @@ public class QuestionService {
         return dto;
     }
 
-    // Convert DTO to Entity
-    private Question convertToEntity(QuestionRequestDTO dto) {
-        Question question = new Question();
-        question.setTitle(dto.getTitle());
-        question.setDescription(dto.getDescription());
-        question.setUserEmail(dto.getUserEmail());
-        question.setUserPhone(dto.getUserPhone());
 
-        // Set category if categoryId is provided
-        if (dto.getCategoryId() != null) {
-            Optional<Category> category = categoryRepository.findById(dto.getCategoryId());
-            category.ifPresent(question::setCategory);
-        }
-
-        return question;
-    }
 }

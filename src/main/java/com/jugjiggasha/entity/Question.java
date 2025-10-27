@@ -1,6 +1,7 @@
 package com.jugjiggasha.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class Question {
     @JoinColumn(name = "category_id")
     private Category category;
 
+
+    private String userName;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -51,4 +54,22 @@ public class Question {
     public Question() {
         this.createdAt = LocalDateTime.now();
     }
+    // Update the setAnswer method
+    public void setAnswer(String answer) {
+        this.answer = answer;
+        this.isAnswered = answer != null && !answer.trim().isEmpty();
+        if (this.isAnswered) {
+            this.answeredAt = LocalDateTime.now();
+        }
+    }
+
+    // Add this method for admin to create question with answer directly
+    public void createWithAnswer(String answer) {
+        setAnswer(answer);
+        if (this.isAnswered) {
+            this.answeredAt = LocalDateTime.now();
+        }
+    }
+
+
 }
