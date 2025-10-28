@@ -1,9 +1,11 @@
 FROM openjdk:17-jdk-slim
-
 WORKDIR /app
 
-COPY target/jugjiggasha-backend-1.0.0.jar app.jar
+# JAR file কপি করুন
+COPY target/Jugjiggasha-1.0.0-SNAPSHOT.jar app.jar
 
+# Port expose করুন
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+# JAR ফাইল চালানোর জন্য কমান্ড
+ENTRYPOINT ["java", "-jar", "app.jar"]
