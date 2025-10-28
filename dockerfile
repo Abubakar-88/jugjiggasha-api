@@ -1,9 +1,17 @@
-FROM openjdk:17-jdk-slim
+# Use Alpine for smaller size
+FROM openjdk:17-alpine
+
+# Install Maven
+RUN apk add --no-cache maven
 
 WORKDIR /app
 
-COPY target/*.jar app.jar
+# Copy source code
+COPY pom.xml .
+COPY src ./src
 
-EXPOSE 80
+# Build the application
+RUN mvn clean package -DskipTests
 
-CMD ["java", "-jar", "app.jar"]
+# Run the application
+CMD ["java", "-jar", "target/Jugjiggasha-1.0.0.jar"]
