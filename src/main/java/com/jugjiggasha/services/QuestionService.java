@@ -1,5 +1,7 @@
 package com.jugjiggasha.services;
 
+import com.jugjiggasha.dto.PaginatedResponseDTO;
+import com.jugjiggasha.dto.PaginationDTO;
 import com.jugjiggasha.dto.category.CategoryDTO;
 import com.jugjiggasha.dto.question.QuestionRequestDTO;
 import com.jugjiggasha.dto.question.QuestionResponseDTO;
@@ -8,6 +10,10 @@ import com.jugjiggasha.entity.Question;
 import com.jugjiggasha.repository.CategoryRepository;
 import com.jugjiggasha.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +28,75 @@ public class QuestionService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    // Get all questions with pagination
+    public PaginatedResponseDTO<QuestionResponseDTO> getAllQuestions(PaginationDTO pagination) {
+        Pageable pageable = createPageable(pagination);
+        Page<Question> questionPage = questionRepository.findAll(pageable);
 
+        return convertToPaginatedResponse(questionPage, pagination);
+    }
+
+    // Search questions with pagination
+    public PaginatedResponseDTO<QuestionResponseDTO> searchQuestions(String query, PaginationDTO pagination) {
+        Pageable pageable = createPageable(pagination);
+        Page<Question> questionPage = questionRepository.searchQuestions(query, pageable);
+
+        return convertToPaginatedResponse(questionPage, pagination);
+    }
+
+    // Get questions by category with pagination
+    public PaginatedResponseDTO<QuestionResponseDTO> getQuestionsByCategory(Long categoryId, PaginationDTO pagination) {
+        Pageable pageable = createPageable(pagination);
+        Page<Question> questionPage = questionRepository.findByCategoryId(categoryId, pageable);
+
+        return convertToPaginatedResponse(questionPage, pagination);
+    }
+
+    // Get answered questions with pagination
+    public PaginatedResponseDTO<QuestionResponseDTO> getAnsweredQuestions(PaginationDTO pagination) {
+        Pageable pageable = createPageable(pagination);
+        Page<Question> questionPage = questionRepository.findByIsAnsweredTrue(pageable);
+
+        return convertToPaginatedResponse(questionPage, pagination);
+    }
+
+    // Get unanswered questions with pagination
+    public PaginatedResponseDTO<QuestionResponseDTO> getUnansweredQuestions(PaginationDTO pagination) {
+        Pageable pageable = createPageable(pagination);
+        Page<Question> questionPage = questionRepository.findByIsAnsweredFalse(pageable);
+
+        return convertToPaginatedResponse(questionPage, pagination);
+    }
+
+    // Helper method to create Pageable
+    private Pageable createPageable(PaginationDTO pagination) {
+        Sort.Direction direction = Sort.Direction.fromString(pagination.getSortDirection());
+        Sort sort = Sort.by(direction, pagination.getSortBy());
+
+        return PageRequest.of(
+                pagination.getPage(),
+                pagination.getSize(),
+                sort
+        );
+    }
+
+    // Helper method to convert Page to PaginatedResponseDTO
+    private PaginatedResponseDTO<QuestionResponseDTO> convertToPaginatedResponse(
+            Page<Question> questionPage, PaginationDTO pagination) {
+
+        List<QuestionResponseDTO> content = questionPage.getContent()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return new PaginatedResponseDTO<>(
+                content,
+                questionPage.getNumber() + 1, // Spring Data pages are 0-indexed
+                questionPage.getTotalPages(),
+                questionPage.getTotalElements(),
+                pagination.getSize()
+        );
+    }
     public List<QuestionResponseDTO> getAllQuestions() {
         return questionRepository.findAll()
                 .stream()

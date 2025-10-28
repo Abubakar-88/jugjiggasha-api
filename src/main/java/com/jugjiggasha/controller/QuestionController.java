@@ -1,5 +1,7 @@
 package com.jugjiggasha.controller;
 
+import com.jugjiggasha.dto.PaginatedResponseDTO;
+import com.jugjiggasha.dto.PaginationDTO;
 import com.jugjiggasha.dto.question.AnswerRequestDTO;
 import com.jugjiggasha.dto.question.QuestionRequestDTO;
 import com.jugjiggasha.dto.question.QuestionResponseDTO;
@@ -19,7 +21,72 @@ public class QuestionController {
 
     @Autowired
     private QuestionService questionService;
+    // Get all questions with pagination
+    @GetMapping("/paginated")
+    public ResponseEntity<PaginatedResponseDTO<QuestionResponseDTO>> getAllQuestionsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
 
+        PaginationDTO pagination = new PaginationDTO(page, size, sortBy, sortDirection);
+        PaginatedResponseDTO<QuestionResponseDTO> response = questionService.getAllQuestions(pagination);
+        return ResponseEntity.ok(response);
+    }
+
+    // Search questions with pagination
+    @GetMapping("/search/paginated")
+    public ResponseEntity<PaginatedResponseDTO<QuestionResponseDTO>> searchQuestionsPaginated(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        PaginationDTO pagination = new PaginationDTO(page, size, sortBy, sortDirection);
+        PaginatedResponseDTO<QuestionResponseDTO> response = questionService.searchQuestions(q, pagination);
+        return ResponseEntity.ok(response);
+    }
+
+    // Get questions by category with pagination
+    @GetMapping("/category/{categoryId}/paginated")
+    public ResponseEntity<PaginatedResponseDTO<QuestionResponseDTO>> getQuestionsByCategoryPaginated(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        PaginationDTO pagination = new PaginationDTO(page, size, sortBy, sortDirection);
+        PaginatedResponseDTO<QuestionResponseDTO> response = questionService.getQuestionsByCategory(categoryId, pagination);
+        return ResponseEntity.ok(response);
+    }
+
+    // Get answered questions with pagination
+    @GetMapping("/answered/paginated")
+    public ResponseEntity<PaginatedResponseDTO<QuestionResponseDTO>> getAnsweredQuestionsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        PaginationDTO pagination = new PaginationDTO(page, size, sortBy, sortDirection);
+        PaginatedResponseDTO<QuestionResponseDTO> response = questionService.getAnsweredQuestions(pagination);
+        return ResponseEntity.ok(response);
+    }
+
+    // Get unanswered questions with pagination
+    @GetMapping("/unanswered/paginated")
+    public ResponseEntity<PaginatedResponseDTO<QuestionResponseDTO>> getUnansweredQuestionsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+
+        PaginationDTO pagination = new PaginationDTO(page, size, sortBy, sortDirection);
+        PaginatedResponseDTO<QuestionResponseDTO> response = questionService.getUnansweredQuestions(pagination);
+        return ResponseEntity.ok(response);
+    }
     @GetMapping
     public List<QuestionResponseDTO> getAllQuestions() {
         return questionService.getAllQuestions();
