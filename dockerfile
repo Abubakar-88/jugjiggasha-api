@@ -1,8 +1,14 @@
+# Multi-stage build ব্যবহার করুন
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Runtime stage
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-
-# JAR file কপি করুন
-COPY target/Jugjiggasha-1.0.0-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Port expose করুন
 EXPOSE 8080
