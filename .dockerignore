@@ -1,4 +1,10 @@
 .git
-target/
-.idea
+.gitignore
+README.md
 *.log
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.env
