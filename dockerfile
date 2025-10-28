@@ -14,4 +14,4 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Run the application
-CMD ["java", "-jar", "target/Jugjiggasha-1.0.0.jar"]
+CMD ["java", "-jar", "target/Jugjiggasha-0.0.1-SNAPSHOT.jar"]
