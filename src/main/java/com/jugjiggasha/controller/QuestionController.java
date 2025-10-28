@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/questions")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://jugjiggasha.netlify.app/")
 public class QuestionController {
 
     @Autowired
